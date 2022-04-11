@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Sample lambda layer application
+
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Layers:
+        - !Ref DependenciesLayers
+#         - !Ref JavaDependencies
+      Events:
+        HelloWorld:
+          Type: HttpApi
+          Properties:
+            Path: /testurl
+            Method: get
+
+  DependenciesLayers:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: Dependencies-layer
+      Description: test
+      ContentUri: package/
+      CompatibleRuntimes:
+        - python3.8
+
+#  JavaDependencies:
+#     Type: AWS::Serverless::LayerVersion
+#     Properties:
+#       LayerName: Java Dependencies
+#       Description: It contains a JVM from Java 8 in order to locally run the HTML Validator
+#       ContentUri: dependencies/
+
+
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref StageName
+      Tags:
+        Tag: Value
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 200
+      RouteSettings:
+        "GET /path":
+          ThrottlingBurstLimit: 500 # overridden in HttpApi Event
+      StageVariables:
+        StageVar: Value
+      FailOnWarnings: true
+
+
+Outputs:
+  LambdaApi:
+    Description: URL of your API endpoint
+    Value:
+      Fn::Sub: 'https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${StageName}/'
+  HttpApiId:
+    Description: Api id of HttpApi
+    Value:
+      Ref: HttpApi
+  LambdaFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt HelloWorldFunction.Arn
