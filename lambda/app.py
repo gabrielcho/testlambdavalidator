@@ -1,6 +1,5 @@
 import requests
 import json
-from py_w3c.validators.html.validator import HTMLValidator  
 import validators
 import html
 
@@ -20,17 +19,12 @@ def validateByURL(url):
              "Content-Type": "text/html; charset=UTF-8",
       },
     )
-    return html.unescape(r.json())
   except Exception:
-    return json.dumps({"message" : "something happened when using the validator "})
+    return json.dumps({"testResult" : "Validator not responding. Please try again later"})
+  finally:
+    return json.dumps({"testResult" : html.unescape(r.json())})
 
 def lambda_handler(event, context):
-
-
-
-
-#  vld = HTMLValidator()
-#  vld.validate('http://example.com')
 
   #Check if any parameter exists
   try:
@@ -42,42 +36,30 @@ def lambda_handler(event, context):
         
       #Check if targeturl is a valid url
       if validators.url(targeturl):
-
-        return {    
-       "statusCode": 400,  
-       "body": json.dumps({
-              "message": validateByURL(targeturl),
-              "url": targeturl
-            }),   
-        }
+        statuscode = 200
+        message = validateByURL(targeturl)
 
       #if it's not a valid URL  
       else:
-        return {    
-       "statusCode": 400,  
-       "body": json.dumps({
-              "message": "Invalid URL, please check it and try again."
-            }),   
-        }
-        
+        statuscode = 400
+        message = json.dumps({"testResult": "Invalid URL, please check it and try again"})
 
     except Exception:
-      return {    
-       "statusCode": 400,  
-       "body": json.dumps({
-              "message": "No targeturl parameter was found",
-              "url": targeturl
-            }),   
-        }
+      statuscode = 400
+      message = json.dumps({"testResult": "No targeturl parameter was found"}) 
 
   #I should learn how tryexcept blocks work
   except Exception:
-      return {    
-       "statusCode": 400,  
-       "body": json.dumps({
-              "message": "No parameters were found, please make sure to add the 'targeturl' parameter."
-            }),   
-        }
+
+    statuscode = 400
+    message = json.dumps({"testResult": "No parameters were found, please make sure to add the 'targeturl' parameter."}) 
+
+  finally:
+    return {    
+        "headers": {"content-type": "application/json"},
+        "statusCode": statuscode,
+        "body": message
+      }
 
 
 

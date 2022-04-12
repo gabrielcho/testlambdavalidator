@@ -1,3 +1,0 @@
-[console_scripts]
-w3c_validate = py_w3c.validators.html.validator:main
-
