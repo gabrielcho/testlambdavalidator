@@ -1,14 +1,15 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Sample lambda layer application
+Description: SAM Template for building the infrastructure to implement a lambda function HTML Validator.
 
 Resources:
-  HelloWorldFunction:
+  HTMLValidatorFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambda/
       Handler: app.lambda_handler
       Runtime: python3.8
+      Timeout: 60
       Layers:
         - !Ref DependenciesLayers
 
@@ -28,25 +29,14 @@ Resources:
       CompatibleRuntimes:
         - python3.8
 
-#  JavaDependencies:
-#     Type: AWS::Serverless::LayerVersion
-#     Properties:
-#       LayerName: Java Dependencies
-#       Description: It contains a JVM from Java 8 in order to locally run the HTML Validator
-#       ContentUri: dependencies/
-
-
-  HttpApi:
+  HttpValidatorApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      StageName: !Ref StageName
+      StageName: prod
       Tags:
         Tag: Value
       DefaultRouteSettings:
         ThrottlingBurstLimit: 200
-      RouteSettings:
-        "GET /path":
-          ThrottlingBurstLimit: 500 # overridden in HttpApi Event
       StageVariables:
         StageVar: Value
       FailOnWarnings: true
@@ -56,11 +46,11 @@ Outputs:
   LambdaApi:
     Description: URL of your API endpoint
     Value:
-      Fn::Sub: 'https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${StageName}/'
+      Fn::Sub: 'https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/prod/'
   HttpApiId:
-    Description: Api id of HttpApi
+    Description: Api id of HttpValidatorApi
     Value:
-      Ref: HttpApi
+      Ref: HttpValidatorApi
   LambdaFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
+    Description: "HTML Validator Lambda Function"
+    Value: !GetAtt HTMLValidatorFunction.Arn

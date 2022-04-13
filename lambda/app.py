@@ -18,6 +18,7 @@ def validateByURL(url):
               "Chrome/41.0.2272.101 Safari/537.36",
              "Content-Type": "text/html; charset=UTF-8",
       },
+      timeout=11
     )
   except Exception:
     return json.dumps({"testResult" : "Validator not responding. Please try again later"})
@@ -37,7 +38,11 @@ def lambda_handler(event, context):
       #Check if targeturl is a valid url
       if validators.url(targeturl):
         statuscode = 200
-        message = validateByURL(targeturl)
+        try:
+          message = validateByURL(targeturl)
+        except Exception:
+          statuscode = 504
+          message = json.dumps({"testResult": "Validation timed out, targeturl took too long to send back a response"})
 
       #if it's not a valid URL  
       else:
@@ -58,7 +63,7 @@ def lambda_handler(event, context):
     return {    
         "headers": {"content-type": "application/json"},
         "statusCode": statuscode,
-        "body": message
+        "body": message 
       }
 
 
