@@ -24,7 +24,7 @@ Resources:
     Type: AWS::Serverless::LayerVersion
     Properties:
       LayerName: Dependencies-layer
-      Description: test
+      Description: Python dependencies needed to run the lambda function code
       ContentUri: package/
       CompatibleRuntimes:
         - python3.8

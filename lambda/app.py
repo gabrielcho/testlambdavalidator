@@ -53,12 +53,13 @@ def lambda_handler(event, context):
       statuscode = 400
       message = json.dumps({"testResult": "No targeturl parameter was found"}) 
 
-  #I should learn how tryexcept blocks work
+  #No parameters found case
   except Exception:
 
     statuscode = 400
     message = json.dumps({"testResult": "No parameters were found, please make sure to add the 'targeturl' parameter."}) 
-
+  
+  #We finally have a message and a status code already defined so we can now return the response
   finally:
     return {    
         "headers": {"content-type": "application/json"},
