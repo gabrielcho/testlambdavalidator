@@ -1,9 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
-  Stage:
-    Type: String
-    description: Stage of the lambda function to be deployed
   AppName:
     Type: String
     Default: cf-deploy
