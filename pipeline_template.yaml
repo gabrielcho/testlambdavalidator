@@ -159,7 +159,7 @@ Resources:
                 Owner: !Ref RepoOwner
                 Repo: !Ref GitHubRepo
                 Branch: !Ref GitHubBranch
-                PollForSourceChanges: false
+                PollForSourceChanges: true
                 OAuthToken: !Ref GitHubOAuthToken
               OutputArtifacts:
                 - Name: SourceCode
