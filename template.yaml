@@ -13,10 +13,11 @@ Resources:
       Layers:
         - !Ref DependenciesLayers
 
-      Events:
-        HelloWorld:
+      Events: 
+        ExplicitApi:
           Type: HttpApi
           Properties:
+            ApiId: !Ref HttpValidatorApi
             Path: /testurl
             Method: get
 
